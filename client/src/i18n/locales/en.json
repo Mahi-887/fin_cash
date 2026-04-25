@@ -1,0 +1,61 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "portfolio": "Portfolio",
+    "advisor": "AI Advisor",
+    "transactions": "Transactions",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "auth": {
+    "login": "Sign in",
+    "register": "Create account",
+    "email": "Email address",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcomeBack": "Welcome back, {{name}}",
+    "totalValue": "Total Portfolio Value",
+    "dayChange": "Today's Change",
+    "topHoldings": "Top Holdings",
+    "recentActivity": "Recent Activity"
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "holdings": "Holdings",
+    "allocation": "Allocation",
+    "performance": "Performance",
+    "addAsset": "Add Asset"
+  },
+  "advisor": {
+    "title": "AI Advisor",
+    "placeholder": "Ask me anything about your finances…",
+    "thinking": "Thinking…",
+    "insights": "AI Insights"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "type": "Type",
+    "category": "Category"
+  }
+}

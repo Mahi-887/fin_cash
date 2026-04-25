@@ -1,0 +1,61 @@
+{
+  "common": {
+    "loading": "लोड हो रहा है…",
+    "error": "कुछ गलत हो गया",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "back": "वापस",
+    "next": "अगला",
+    "submit": "जमा करें",
+    "search": "खोजें"
+  },
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "portfolio": "पोर्टफोलियो",
+    "advisor": "AI सलाहकार",
+    "transactions": "लेनदेन",
+    "settings": "सेटिंग्स",
+    "logout": "लॉग आउट"
+  },
+  "auth": {
+    "login": "साइन इन करें",
+    "register": "खाता बनाएं",
+    "email": "ईमेल पता",
+    "password": "पासवर्ड",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "noAccount": "खाता नहीं है?",
+    "hasAccount": "पहले से खाता है?"
+  },
+  "dashboard": {
+    "title": "डैशबोर्ड",
+    "welcomeBack": "वापस स्वागत है, {{name}}",
+    "totalValue": "कुल पोर्टफोलियो मूल्य",
+    "dayChange": "आज का बदलाव",
+    "topHoldings": "शीर्ष होल्डिंग्स",
+    "recentActivity": "हाल की गतिविधि"
+  },
+  "portfolio": {
+    "title": "पोर्टफोलियो",
+    "holdings": "होल्डिंग्स",
+    "allocation": "आवंटन",
+    "performance": "प्रदर्शन",
+    "addAsset": "संपत्ति जोड़ें"
+  },
+  "advisor": {
+    "title": "AI सलाहकार",
+    "placeholder": "अपने वित्त के बारे में कुछ भी पूछें…",
+    "thinking": "सोच रहा है…",
+    "insights": "AI अंतर्दृष्टि"
+  },
+  "transactions": {
+    "title": "लेनदेन",
+    "date": "दिनांक",
+    "description": "विवरण",
+    "amount": "राशि",
+    "type": "प्रकार",
+    "category": "श्रेणी"
+  }
+}
