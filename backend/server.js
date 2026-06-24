@@ -180,240 +180,244 @@ app.post('/api/payment/verify', async (req, res) => {
 });
 
 // MongoDB Connection
-mongoose.connect(MONGO_URI)
-  .then(async () => {
-      console.log('Connected to MongoDB');
-      // Seed Admin User
-      const adminExists = await User.findOne({ email: 'admin@fincash.com' });
-      if (!adminExists) {
-          const hashedAdminPassword = await bcrypt.hash('admin123', 10);
-          await User.create({
-              name: 'Admin',
-              email: 'admin@fincash.com',
-              password: hashedAdminPassword,
-              role: 'admin',
-              notifications: [
-                  { title: "Welcome to FinCash!", message: "We're glad to have you here. Start by setting up your financial profile.", type: "info" },
-                  { title: "Security Alert", message: "Make sure to enable two-factor authentication for better security.", type: "warning" }
-              ]
-          });
-          console.log('Admin user seeded: admin@fincash.com / admin123');
-      }
-
-      // Seed Mentors
-      const mentorsCount = await Mentor.countDocuments();
-      if (mentorsCount === 0) {
-          const mentorsData = [
-              {
-                  name: "Rajesh Kumar",
-                  role: "Senior Investment Strategist",
-                  specialty: "Indian Stock Market & Mutual Funds",
-                  rating: 4.9,
-                  reviews: 156,
-                  available: "Mon - Wed",
-                  sessionPrice: "₹799",
-                  image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
-                  description: "With over 15 years in the Indian financial sector, Rajesh specializes in long-term wealth creation through equity and debt instruments.",
-                  sessionOverview: "A deep dive into your current portfolio with a focus on diversifying across Indian market sectors for optimal returns."
-              },
-              {
-                  name: "Priya Sharma",
-                  role: "Personal Finance Consultant",
-                  specialty: "Tax Planning & Retirement",
-                  rating: 4.8,
-                  reviews: 89,
-                  available: "Tue - Fri",
-                  sessionPrice: "₹699",
-                  image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-                  description: "Priya helps young professionals navigate the complexities of 80C, 80D, and NPS to maximize their take-home salary while building a retirement nest egg.",
-                  sessionOverview: "Personalized tax-saving roadmap and a step-by-step guide to starting your retirement fund early."
-              },
-              {
-                  name: "Sarah Jenkins",
-                  role: "Certified Financial Planner (CFP)",
-                  specialty: "Debt Management & Savings",
-                  rating: 4.9,
-                  reviews: 128,
-                  available: "Mon - Fri",
-                  sessionPrice: "₹599",
-                  image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
-                  description: "Sarah has helped thousands of families get out of debt and build sustainable spending habits through her 'Freedom Framework'.",
-                  sessionOverview: "A comprehensive look at your monthly cash flow, identifying 'leakage' and creating a high-velocity debt payoff plan."
-              },
-              {
-                  name: "Ananya Iyer",
-                  role: "Wealth Psychology Coach",
-                  specialty: "Behavioral Finance",
-                  rating: 4.7,
-                  reviews: 42,
-                  available: "Wed - Sat",
-                  sessionPrice: "₹499",
-                  image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400",
-                  description: "Ananya focuses on the 'why' behind your spending. She combines psychology with finance to help you break toxic money cycles.",
-                  sessionOverview: "Interactive session to identify your money personality and set emotional boundaries with your wallet."
-              },
-              {
-                  name: "Vikram Singh",
-                  role: "Portfolio Manager",
-                  specialty: "Global Markets & Real Estate",
-                  rating: 4.9,
-                  reviews: 74,
-                  available: "Mon - Thu",
-                  sessionPrice: "₹749",
-                  image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
-                  description: "Vikram specializes in HNI portfolio management and alternative investments like REITs and fractional real estate.",
-                  sessionOverview: "Strategic discussion on asset allocation and exploring high-yield alternative investment opportunities."
-              },
-              {
-                  name: "Ishita Sharma",
-                  role: "CA Finalist & Junior Audit Associate",
-                  specialty: "Indirect Taxation & GST Compliance",
-                  rating: 4.8,
-                  reviews: 120,
-                  available: "Mon, Wed, Fri",
-                  sessionPrice: "₹1,499",
-                  image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400",
-                  description: "A top-ranking CA finalist who simplifies the complexities of GST and tax filing for young freelancers and small businesses.",
-                  sessionOverview: "Personalized session on managing your GST filings and optimizing indirect tax for your business or freelance work."
-              },
-              {
-                  name: "Aditya Verma",
-                  role: "Quantitative Trader & Fintech Enthusiast",
-                  specialty: "Scalping Strategies & Technical Analysis",
-                  rating: 4.9,
-                  reviews: 250,
-                  available: "Weekdays",
-                  sessionPrice: "₹999",
-                  image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400",
-                  description: "A 21-year-old trading prodigy who has built a successful portfolio using data-driven scalping techniques.",
-                  sessionOverview: "Live trading session focusing on scalping strategies and market entry/exit timing for beginners."
-              },
-              {
-                  name: "Rohan Mehta",
-                  role: "CFA Level 2 Candidate",
-                  specialty: "Portfolio Rebalancing & Equity Research",
-                  rating: 4.7,
-                  reviews: 85,
-                  available: "Sat-Sun",
-                  sessionPrice: "₹1,299",
-                  image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
-                  description: "Passionate about value investing, Rohan helps beginners understand how to read balance sheets and build long-term wealth.",
-                  sessionOverview: "Deep dive into equity research and how to build a diversified portfolio that beats the market."
-              },
-              {
-                  name: "Sneha Kapoor",
-                  role: "Young Investor & Content Creator",
-                  specialty: "Gen-Z Financial Planning & Budgeting",
-                  rating: 4.9,
-                  reviews: 430,
-                  available: "Daily Evening",
-                  sessionPrice: "₹799",
-                  image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-                  description: "Sneha focuses on teaching financial discipline and the power of compounding to students and early-career professionals.",
-                  sessionOverview: "Interactive budgeting session to help you save your first ₹1 Lakh and start your investment journey early."
-              }
-          ];
-          await Mentor.insertMany(mentorsData);
-          console.log('Mentors seeded');
-      }
-
-      // Seed Videos
-      const videosCount = await Video.countDocuments();
-      if (videosCount === 0) {
-          const videosData = [
-              {
-                  title: "GST 2024 Fundamentals - What is GST",
-                  duration: "52:14",
-                  views: "1.5M",
-                  thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f",
-                  videoUrl: "/gst_fundamentals_2024.mp4",
-                  category: "Taxation",
-                  quiz: [
-                      { question: "What does GST stand for?", options: ["Goods and Sales Tax", "General Service Tax", "Goods and Services Tax", "Global Standard Tax"], correct: 2 },
-                      { question: "When was GST implemented in India?", options: ["1st July 2017", "1st April 2017", "1st Jan 2018", "15th Aug 2016"], correct: 0 }
+if (MONGO_URI) {
+    mongoose.connect(MONGO_URI)
+      .then(async () => {
+          console.log('Connected to MongoDB');
+          // Seed Admin User
+          const adminExists = await User.findOne({ email: 'admin@fincash.com' });
+          if (!adminExists) {
+              const hashedAdminPassword = await bcrypt.hash('admin123', 10);
+              await User.create({
+                  name: 'Admin',
+                  email: 'admin@fincash.com',
+                  password: hashedAdminPassword,
+                  role: 'admin',
+                  notifications: [
+                      { title: "Welcome to FinCash!", message: "We're glad to have you here. Start by setting up your financial profile.", type: "info" },
+                      { title: "Security Alert", message: "Make sure to enable two-factor authentication for better security.", type: "warning" }
                   ]
-              },
-              {
-                  title: "Learn Trading from Zero - Full Course",
-                  duration: "90:00",
-                  views: "1.2M",
-                  thumbnail: "https://images.unsplash.com/photo-1611974714024-463ef9c71659",
-                  videoUrl: "/trading_course.mp4",
-                  category: "Masterclass",
-                  quiz: [
-                      { question: "What is a 'Bull Market'?", options: ["Market falling", "Market rising", "No movement", "Market closed"], correct: 1 },
-                      { question: "What does 'Liquidity' refer to?", options: ["Company cash", "Ease of buying/selling", "Stock color", "Market volume"], correct: 1 }
-                  ]
-              },
-              {
-                  title: "Indian Tax System Explained: All you need to know",
-                  duration: "25:00",
-                  views: "0",
-                  thumbnail: "https://images.unsplash.com/photo-1589232390691-58221683aa3d",
-                  videoUrl: "/indian_tax_system.mp4",
-                  category: "Taxation",
-                  quiz: [
-                      { question: "Who is responsible for collecting Direct Taxes in India?", options: ["GST Council", "CBDT", "RBI", "SEBI"], correct: 1 },
-                      { question: "Which tax was replaced by GST in India?", options: ["Income Tax", "Corporate Tax", "Service Tax", "Wealth Tax"], correct: 2 },
-                      { question: "What is the current standard GST rate for most electronics?", options: ["5%", "12%", "18%", "28%"], correct: 2 },
-                      { question: "Under which section can you claim deductions for LIC premiums?", options: ["Section 80D", "Section 80C", "Section 80G", "Section 10"], correct: 1 },
-                      { question: "What does TDS stand for?", options: ["Tax Deducted at Source", "Total Daily Savings", "Tax Deposit Scheme", "Tax Deduction System"], correct: 0 },
-                      { question: "What is the maximum limit for deduction under Section 80C?", options: ["1 Lakh", "1.5 Lakh", "2 Lakh", "2.5 Lakh"], correct: 1 },
-                      { question: "Which body governs the GST in India?", options: ["The Parliament", "GST Council", "Finance Ministry", "State Governments"], correct: 1 },
-                      { question: "What is the income limit for a tax rebate under Section 87A (New Regime)?", options: ["5 Lakh", "6 Lakh", "7 Lakh", "8 Lakh"], correct: 2 },
-                      { question: "What is Corporate Tax?", options: ["Tax on salaries", "Tax on company profits", "Tax on imports", "Tax on luxury goods"], correct: 1 },
-                      { question: "Which type of tax is GST?", options: ["Direct Tax", "Indirect Tax", "Progressive Tax", "Wealth Tax"], correct: 1 },
-                      { question: "What is the full form of PAN?", options: ["Permanent Account Number", "Personal Access Number", "Primary Account Note", "Public Account Network"], correct: 0 },
-                      { question: "What is the standard deduction for salaried individuals?", options: ["30,000", "40,000", "50,000", "60,000"], correct: 2 },
-                      { question: "Which tax is levied on the import of goods into India?", options: ["GST", "Excise Duty", "Customs Duty", "Cess"], correct: 2 },
-                      { question: "What is the portal for filing Income Tax Returns in India?", options: ["GSTN Portal", "e-Filing Portal", "RBI Portal", "NSDL Portal"], correct: 1 },
-                      { question: "What is Surcharge in Indian tax system?", options: ["A processing fee", "Tax levied on tax-exempt income", "An additional tax on high-income earners", "A fine for late filing"], correct: 2 },
-                      { question: "What is 'Cess' used for?", options: ["General budget", "Specific purposes like Education and Health", "Repaying state debts", "Import subsidies"], correct: 1 },
-                      { question: "What is the frequency of filing GST returns for regular taxpayers?", options: ["Weekly", "Monthly/Quarterly", "Half-yearly", "Annually"], correct: 1 },
-                      { question: "What is a 'Tax Haven'?", options: ["A bank vault", "A country with very low or no taxes", "A legal tax consultancy", "A government savings scheme"], correct: 1 },
-                      { question: "What is Capital Gains Tax?", options: ["Tax on salary", "Tax on profit from sale of assets", "Tax on bank interest", "Tax on lottery winnings"], correct: 1 },
-                      { question: "Which year is the 'Assessment Year' if the Financial Year is 2023-24?", options: ["2022-23", "2023-24", "2024-25", "2025-26"], correct: 2 }
-                  ]
-              }
-          ];
-          await Video.insertMany(videosData);
-          console.log('Videos seeded');
-      }
+              });
+              console.log('Admin user seeded: admin@fincash.com / admin123');
+          }
 
-      // Seed Learning Paths
-      const pathsCount = await LearningPath.countDocuments();
-      if (pathsCount === 0) {
-          const pathsData = [
-              {
-                  title: "Saving Basics",
-                  description: "Build your first emergency fund",
-                  progress: 75,
-                  icon: "ShieldCheck",
-                  color: "from-emerald-500/20 to-emerald-500/5",
-                  borderColor: "border-emerald-500/20"
-              },
-              {
-                  title: "Financial Discipline",
-                  description: "Master the 50/30/20 rule",
-                  progress: 30,
-                  icon: "Target",
-                  color: "from-blue-500/20 to-blue-500/5",
-                  borderColor: "border-blue-500/20"
-              },
-              {
-                  title: "Intro to Investing",
-                  description: "Understand compound interest",
-                  progress: 0,
-                  icon: "TrendingUp",
-                  color: "from-purple-500/20 to-purple-500/5",
-                  borderColor: "border-purple-500/20"
-              }
-          ];
-          await LearningPath.insertMany(pathsData);
-          console.log('Learning Paths seeded');
-      }
-  })
-  .catch(err => console.error('MongoDB connection error:', err));
+          // Seed Mentors
+          const mentorsCount = await Mentor.countDocuments();
+          if (mentorsCount === 0) {
+              const mentorsData = [
+                  {
+                      name: "Rajesh Kumar",
+                      role: "Senior Investment Strategist",
+                      specialty: "Indian Stock Market & Mutual Funds",
+                      rating: 4.9,
+                      reviews: 156,
+                      available: "Mon - Wed",
+                      sessionPrice: "₹799",
+                      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+                      description: "With over 15 years in the Indian financial sector, Rajesh specializes in long-term wealth creation through equity and debt instruments.",
+                      sessionOverview: "A deep dive into your current portfolio with a focus on diversifying across Indian market sectors for optimal returns."
+                  },
+                  {
+                      name: "Priya Sharma",
+                      role: "Personal Finance Consultant",
+                      specialty: "Tax Planning & Retirement",
+                      rating: 4.8,
+                      reviews: 89,
+                      available: "Tue - Fri",
+                      sessionPrice: "₹699",
+                      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
+                      description: "Priya helps young professionals navigate the complexities of 80C, 80D, and NPS to maximize their take-home salary while building a retirement nest egg.",
+                      sessionOverview: "Personalized tax-saving roadmap and a step-by-step guide to starting your retirement fund early."
+                  },
+                  {
+                      name: "Sarah Jenkins",
+                      role: "Certified Financial Planner (CFP)",
+                      specialty: "Debt Management & Savings",
+                      rating: 4.9,
+                      reviews: 128,
+                      available: "Mon - Fri",
+                      sessionPrice: "₹599",
+                      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
+                      description: "Sarah has helped thousands of families get out of debt and build sustainable spending habits through her 'Freedom Framework'.",
+                      sessionOverview: "A comprehensive look at your monthly cash flow, identifying 'leakage' and creating a high-velocity debt payoff plan."
+                  },
+                  {
+                      name: "Ananya Iyer",
+                      role: "Wealth Psychology Coach",
+                      specialty: "Behavioral Finance",
+                      rating: 4.7,
+                      reviews: 42,
+                      available: "Wed - Sat",
+                      sessionPrice: "₹499",
+                      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400",
+                      description: "Ananya focuses on the 'why' behind your spending. She combines psychology with finance to help you break toxic money cycles.",
+                      sessionOverview: "Interactive session to identify your money personality and set emotional boundaries with your wallet."
+                  },
+                  {
+                      name: "Vikram Singh",
+                      role: "Portfolio Manager",
+                      specialty: "Global Markets & Real Estate",
+                      rating: 4.9,
+                      reviews: 74,
+                      available: "Mon - Thu",
+                      sessionPrice: "₹749",
+                      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+                      description: "Vikram specializes in HNI portfolio management and alternative investments like REITs and fractional real estate.",
+                      sessionOverview: "Strategic discussion on asset allocation and exploring high-yield alternative investment opportunities."
+                  },
+                  {
+                      name: "Ishita Sharma",
+                      role: "CA Finalist & Junior Audit Associate",
+                      specialty: "Indirect Taxation & GST Compliance",
+                      rating: 4.8,
+                      reviews: 120,
+                      available: "Mon, Wed, Fri",
+                      sessionPrice: "₹1,499",
+                      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400",
+                      description: "A top-ranking CA finalist who simplifies the complexities of GST and tax filing for young freelancers and small businesses.",
+                      sessionOverview: "Personalized session on managing your GST filings and optimizing indirect tax for your business or freelance work."
+                  },
+                  {
+                      name: "Aditya Verma",
+                      role: "Quantitative Trader & Fintech Enthusiast",
+                      specialty: "Scalping Strategies & Technical Analysis",
+                      rating: 4.9,
+                      reviews: 250,
+                      available: "Weekdays",
+                      sessionPrice: "₹999",
+                      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400",
+                      description: "A 21-year-old trading prodigy who has built a successful portfolio using data-driven scalping techniques.",
+                      sessionOverview: "Live trading session focusing on scalping strategies and market entry/exit timing for beginners."
+                  },
+                  {
+                      name: "Rohan Mehta",
+                      role: "CFA Level 2 Candidate",
+                      specialty: "Portfolio Rebalancing & Equity Research",
+                      rating: 4.7,
+                      reviews: 85,
+                      available: "Sat-Sun",
+                      sessionPrice: "₹1,299",
+                      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+                      description: "Passionate about value investing, Rohan helps beginners understand how to read balance sheets and build long-term wealth.",
+                      sessionOverview: "Deep dive into equity research and how to build a diversified portfolio that beats the market."
+                  },
+                  {
+                      name: "Sneha Kapoor",
+                      role: "Young Investor & Content Creator",
+                      specialty: "Gen-Z Financial Planning & Budgeting",
+                      rating: 4.9,
+                      reviews: 430,
+                      available: "Daily Evening",
+                      sessionPrice: "₹799",
+                      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
+                      description: "Sneha focuses on teaching financial discipline and the power of compounding to students and early-career professionals.",
+                      sessionOverview: "Interactive budgeting session to help you save your first ₹1 Lakh and start your investment journey early."
+                  }
+              ];
+              await Mentor.insertMany(mentorsData);
+              console.log('Mentors seeded');
+          }
+
+          // Seed Videos
+          const videosCount = await Video.countDocuments();
+          if (videosCount === 0) {
+              const videosData = [
+                  {
+                      title: "GST 2024 Fundamentals - What is GST",
+                      duration: "52:14",
+                      views: "1.5M",
+                      thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f",
+                      videoUrl: "/gst_fundamentals_2024.mp4",
+                      category: "Taxation",
+                      quiz: [
+                          { question: "What does GST stand for?", options: ["Goods and Sales Tax", "General Service Tax", "Goods and Services Tax", "Global Standard Tax"], correct: 2 },
+                          { question: "When was GST implemented in India?", options: ["1st July 2017", "1st April 2017", "1st Jan 2018", "15th Aug 2016"], correct: 0 }
+                      ]
+                  },
+                  {
+                      title: "Learn Trading from Zero - Full Course",
+                      duration: "90:00",
+                      views: "1.2M",
+                      thumbnail: "https://images.unsplash.com/photo-1611974714024-463ef9c71659",
+                      videoUrl: "/trading_course.mp4",
+                      category: "Masterclass",
+                      quiz: [
+                          { question: "What is a 'Bull Market'?", options: ["Market falling", "Market rising", "No movement", "Market closed"], correct: 1 },
+                          { question: "What does 'Liquidity' refer to?", options: ["Company cash", "Ease of buying/selling", "Stock color", "Market volume"], correct: 1 }
+                      ]
+                  },
+                  {
+                      title: "Indian Tax System Explained: All you need to know",
+                      duration: "25:00",
+                      views: "0",
+                      thumbnail: "https://images.unsplash.com/photo-1589232390691-58221683aa3d",
+                      videoUrl: "/indian_tax_system.mp4",
+                      category: "Taxation",
+                      quiz: [
+                          { question: "Who is responsible for collecting Direct Taxes in India?", options: ["GST Council", "CBDT", "RBI", "SEBI"], correct: 1 },
+                          { question: "Which tax was replaced by GST in India?", options: ["Income Tax", "Corporate Tax", "Service Tax", "Wealth Tax"], correct: 2 },
+                          { question: "What is the current standard GST rate for most electronics?", options: ["5%", "12%", "18%", "28%"], correct: 2 },
+                          { question: "Under which section can you claim deductions for LIC premiums?", options: ["Section 80D", "Section 80C", "Section 80G", "Section 10"], correct: 1 },
+                          { question: "What does TDS stand for?", options: ["Tax Deducted at Source", "Total Daily Savings", "Tax Deposit Scheme", "Tax Deduction System"], correct: 0 },
+                          { question: "What is the maximum limit for deduction under Section 80C?", options: ["1 Lakh", "1.5 Lakh", "2 Lakh", "2.5 Lakh"], correct: 1 },
+                          { question: "Which body governs the GST in India?", options: ["The Parliament", "GST Council", "Finance Ministry", "State Governments"], correct: 1 },
+                          { question: "What is the income limit for a tax rebate under Section 87A (New Regime)?", options: ["5 Lakh", "6 Lakh", "7 Lakh", "8 Lakh"], correct: 2 },
+                          { question: "What is Corporate Tax?", options: ["Tax on salaries", "Tax on company profits", "Tax on imports", "Tax on luxury goods"], correct: 1 },
+                          { question: "Which type of tax is GST?", options: ["Direct Tax", "Indirect Tax", "Progressive Tax", "Wealth Tax"], correct: 1 },
+                          { question: "What is the full form of PAN?", options: ["Permanent Account Number", "Personal Access Number", "Primary Account Note", "Public Account Network"], correct: 0 },
+                          { question: "What is the standard deduction for salaried individuals?", options: ["30,000", "40,000", "50,000", "60,000"], correct: 2 },
+                          { question: "Which tax is levied on the import of goods into India?", options: ["GST", "Excise Duty", "Customs Duty", "Cess"], correct: 2 },
+                          { question: "What is the portal for filing Income Tax Returns in India?", options: ["GSTN Portal", "e-Filing Portal", "RBI Portal", "NSDL Portal"], correct: 1 },
+                          { question: "What is Surcharge in Indian tax system?", options: ["A processing fee", "Tax levied on tax-exempt income", "An additional tax on high-income earners", "A fine for late filing"], correct: 2 },
+                          { question: "What is 'Cess' used for?", options: ["General budget", "Specific purposes like Education and Health", "Repaying state debts", "Import subsidies"], correct: 1 },
+                          { question: "What is the frequency of filing GST returns for regular taxpayers?", options: ["Weekly", "Monthly/Quarterly", "Half-yearly", "Annually"], correct: 1 },
+                          { question: "What is a 'Tax Haven'?", options: ["A bank vault", "A country with very low or no taxes", "A legal tax consultancy", "A government savings scheme"], correct: 1 },
+                          { question: "What is Capital Gains Tax?", options: ["Tax on salary", "Tax on profit from sale of assets", "Tax on bank interest", "Tax on lottery winnings"], correct: 1 },
+                          { question: "Which year is the 'Assessment Year' if the Financial Year is 2023-24?", options: ["2022-23", "2023-24", "2024-25", "2025-26"], correct: 2 }
+                      ]
+                  }
+              ];
+              await Video.insertMany(videosData);
+              console.log('Videos seeded');
+          }
+
+          // Seed Learning Paths
+          const pathsCount = await LearningPath.countDocuments();
+          if (pathsCount === 0) {
+              const pathsData = [
+                  {
+                      title: "Saving Basics",
+                      description: "Build your first emergency fund",
+                      progress: 75,
+                      icon: "ShieldCheck",
+                      color: "from-emerald-500/20 to-emerald-500/5",
+                      borderColor: "border-emerald-500/20"
+                  },
+                  {
+                      title: "Financial Discipline",
+                      description: "Master the 50/30/20 rule",
+                      progress: 30,
+                      icon: "Target",
+                      color: "from-blue-500/20 to-blue-500/5",
+                      borderColor: "border-blue-500/20"
+                  },
+                  {
+                      title: "Intro to Investing",
+                      description: "Understand compound interest",
+                      progress: 0,
+                      icon: "TrendingUp",
+                      color: "from-purple-500/20 to-purple-500/5",
+                      borderColor: "border-purple-500/20"
+                  }
+              ];
+              await LearningPath.insertMany(pathsData);
+              console.log('Learning Paths seeded');
+          }
+      })
+      .catch(err => console.error('MongoDB connection error:', err));
+} else {
+    console.log('MONGO_URI is not specified. Running in Mock/Fallback mode with in-memory mock storage.');
+}
 
 // Auth Middleware
 const authenticateToken = (req, res, next) => {
